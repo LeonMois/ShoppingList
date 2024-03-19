@@ -13,9 +13,9 @@ class RecipePart:
 
 class Recipe:
 
-    def __init__(self, recipeParts: list) -> None:
-        for recipe in recipeParts:
-            self.recieParts.append(recipe)
+    def __init__(self, recipeParts: list, name: str) -> None:
+        self.recipeParts = recipeParts
+        self.name = name
     
     def changeIngredient(self,ingredient, unit, amount) -> None:
         for part in self.recipeParts:
