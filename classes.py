@@ -24,3 +24,10 @@ class Recipe:
                 part.amount = amount
                 return 
 
+class SingleItem:
+
+    def __init__(self, name: str, unit: str, amount: float, type: str) -> None:
+        self.name = name
+        self.unit = unit
+        self.amount = amount
+        self.type = type
