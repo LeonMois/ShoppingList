@@ -112,6 +112,7 @@ def deleteRecipeFromShoppingList(con: Connection, recipe: str):
     cur.execute(f"DELETE FROM shoppinglist WHERE name='{recipe}'")
     con.commit()
     cur.close()
+
 def deleteIngredient(con: Connection, ingredient: str):
     cur = con.cursor()
     cur.execute(f"DELETE FROM ingredients WHERE name='{ingredient}'")
@@ -143,7 +144,7 @@ def listRecipes(con: Connection) -> list:
 
 def listIngredients(con: Connection) -> list:
     cur = con.cursor()
-    cur.execute(f"SELECT (name) FROM ingredients")
+    cur.execute(f"SELECT * FROM ingredients")
     ingredients = cur.fetchall()
     con.commit()
     cur.close()

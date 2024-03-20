@@ -1,60 +1,52 @@
-import streamlit as st
-import repository as repo
+import flask
+import repository
 import sqlite3
 import classes
+import mappings
 
+app = flask.Flask(__name__)
 
-con = sqlite3.connect("dbs/Leon.db")    
-st.title("Welcome to the Recipe Manager")
-st.header("What would you like to do?")
-st.write("Please select an option from the menu on the left.")
-st.sidebar.title("Menu")
-option = st.sidebar.radio("Options", ["Shopping List", "Edit Recipes and Items"])
+@app.route("/", methods=["GET", "POST"])
+def index():
+    if flask.request.method == "GET":
+        connection = sqlite3.connect("dbs/Leon.db")
+        query = repository.getShoppingList(connection)
+        connection.close() 
+        shoppingList = mappings.mapRowsToSingleItems(query)
+        return flask.render_template("index.html", items=shoppingList)
+    else:
+        connection = sqlite3.connect("dbs/Leon.db")
+        repository.deleteItemFromShoppingList(connection, flask.request.form.get("action"))
+        connection.close()
+        return flask.redirect("/")
 
-col1, col2 = st.columns(2)
-# hide the columns based on the option selected
-if option == "Shopping List":
-    col1, col2 = st.columns(2)
-    col2.empty()
-with col1:
-    st.write("Shopping List")
-    st.write("Here is your shopping list")
-    repo.createDBForUser("Leon")
-    connection = sqlite3.connect("dbs/Leon.db")
-    shoppingList = repo.getShoppingList(connection)
-    # Display the shopping list as checkboxes with the name of the item and the amount and the unit
-    for item in shoppingList:
-        st.checkbox(f"{item[1]} {item[2]} {item[3]}")
-    # Display a button to clear the shopping list
-    if st.button("Clear Shopping List"):
-        repo.clearShoppingList()
-
-with col2:
-    st.write("Create a new recipe")
-    recipeName = st.text_input("Recipe Name")
-    ingredientName = st.text_input("Ingredients")
-    ingredientType = st.text_input("Type")
-    unit = st.text_input("Unit")
-    recipeAmounts = st.text_input("Amounts")
-    # Display a button to add the recipe to the database
-    if st.button("Add Recipe"):
-        ingredient = classes.Ingredient(ingredientName, ingredientType)
-        recipePart = classes.RecipePart(ingredient, unit, recipeAmounts)
-        repo.createRecipe(con, recipeName)
-        repo.createCategory(con, ingredientType)
-        repo.createIngredient(con, ingredient)
-        repo.fillRecipe(con, recipePart, recipeName)
-    # Dropdown to select a recipe to add to list
-    st.write("Add a recipe to the shopping list")
-    recipe = st.selectbox("Recipe", repo.listRecipes(con))
-    if st.button("Add Recipe to Shopping List"):
-        completeRecipe = repo.getRecipe(con, recipe)
-        recipeParts = []
-        for part in completeRecipe:
-            ingredient = classes.Ingredient(part[1], part[2])
-            recipePart = classes.RecipePart(ingredient, part[3], part[4])
-            recipeParts.append(recipePart)
-            
-        recipe = classes.Recipe(recipeParts, recipe)
-
-        repo.addRecipeToShoppingList(con, recipe)
+@app.route("/crud_objects", methods=["GET","POST"])
+def recipes():
+    if flask.request.method == "GET":
+        connection = sqlite3.connect("dbs/Leon.db")
+        categories = []
+        for category in repository.listCategories(connection):
+            categories.append(category[0])
+        print(repository.listIngredients(connection))
+        ingredients = mappings.mapRowsToIngredients(repository.listIngredients(connection))
+        return flask.render_template("crud_objects.html", categories=categories, ingredients=ingredients)
+    else:
+        connection = sqlite3.connect("dbs/Leon.db")
+        if flask.request.form.get("add_category") != None:
+            repository.createCategory(connection, flask.request.form.get("add_category"))
+        elif flask.request.form.get("delete_category") != None:
+            repository.deleteCategory(connection, flask.request.form.get("delete_category"))
+        elif flask.request.form.get("ingredient_name") != None:
+            if flask.request.form.get("delete_ingredient") != None:
+                repository.deleteIngredient(connection, flask.request.form.get("delete_ingredient"))
+                return flask.redirect("/crud_objects")
+            ingredients = mappings.mapRowsToIngredients(repository.listIngredients(connection))
+            print(ingredients)
+            userIngredient = classes.Ingredient(flask.request.form.get("ingredient_name"), flask.request.form.get("ingredient_category"))
+            for ingredient in ingredients:
+                if ingredient.name == userIngredient.name:
+                    repository.updateIngredient(connection, userIngredient)
+                    return flask.redirect("/crud_objects")
+            repository.createIngredient(connection, userIngredient)
+        connection.close()
+        return flask.redirect("/crud_objects")

@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Shopping List</title>
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='main.css') }}"
+    />
+  </head>
+  <body>
+    <div style="align-content: center">
+      <h1>Your list:</h1>
+      <table>
+        <tr>
+          <th>Item</th>
+          <th>Amount</th>
+          <th>Unit</th>
+          <th>Action</th>
+        </tr>
+        {% for item in items %}
+        <tr>
+          <td>{{ item.name }}</td>
+          <td>{{ item.amount }}</td>
+          <td>{{ item.unit }}</td>
+          <td>
+            <form method="post">
+              <button type="submit" name="action" value="{{ item.id }}">
+                Delete
+              </button>
+            </form>
+          </td>
+        </tr>
+        {% endfor %}
+      </table>
+    </div>
+  </body>
+</html>

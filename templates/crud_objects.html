@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Recipes</title>
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='crud.css') }}"
+    />
+  </head>
+  <body>
+    <div>
+      <h1>Edit categories:</h1>
+      <form method="post">
+        <select name="delete_category" style="width: 100px">
+          {% for cat in categories %}
+          <option value="{{ cat }}">{{ cat }}</option>
+          {% endfor %}
+        </select>
+        <br />
+        <button type="submit" name="delete" value="edit">Delete</button>
+      </form>
+      <form method="post">
+        <input type="text" name="add_category" />
+        <br />
+        <button type="submit" name="add" value="add">Create Category</button>
+      </form>
+    </div>
+    <div>
+      <h1>Edit Ingredients:</h1>
+      <form method="post">
+        <input type="text" name="ingredient_name" style="width: 100px" />
+        <br />
+        <select required name="ingredient_category" style="width: 100px">
+          {% for cat in categories %}
+          <option value="{{ cat }}">{{ cat }}</option>
+          {% endfor %}
+        </select>
+        <br />
+        <button type="submit" name="create_and_delete" value="edit">
+          Create or update
+        </button>
+      </form>
+      <form>        
+        <select name="delete_ingredient" style="width: 100px">
+        {% for ingredient in ingredients %}
+      </option>
+
+      <option value="{{ ingredient.name }}">{{ ingredient.name }}</option>
+      {% endfor %}
+    </select>
+    <br />
+    <button type="submit" name="create_and_delete" value="edit">
+      Delete
+    </button></form>
+
+    </div>
+  </body>
+</html>
