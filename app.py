@@ -16,9 +16,11 @@ def index():
             repository.createDBForUser("Leon")
         cur.close()
         query = repository.getShoppingList(connection)
+        single_items = mappings.mapRowsToSingleItems(repository.getSingleItems(connection))
         connection.close() 
         shoppingList = mappings.mapRowsToSingleItems(query)
-        return flask.render_template("index.html", items=shoppingList)
+        
+        return flask.render_template("index.html", items=shoppingList, single_items=single_items)
     else:
         if "edit" in flask.request.form:
             return flask.redirect("/crud_objects")

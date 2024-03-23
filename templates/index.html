@@ -32,6 +32,52 @@
         </button>
       </form>
     </div>
+    <div>
+      <div>
+        <h1>Add item from list:</h1>
+        <form class="items" id="existing" method="post">
+          <select required name="item_name">
+            {% for item in single_items %}
+            <option name="option" value="{{ item.name }}">
+              {{ item.name }}
+            </option>
+            {% endfor %}
+          </select>
+          <br />
+          <input
+            type="text"
+            name="amount"
+            style="width: 100px"
+            placeholder="Amount"
+          />
+          <br />
+          <input
+            type="text"
+            name="unit"
+            style="width: 100px"
+            placeholder="Unit"
+          />
+          <br />
+        </form>
+        <button form="existing" type="submit" name="item" value="add">
+          Add
+        </button>
+      </div>
+      <div>
+        <h1>Add new item:</h1>
+        <form class="items" id="new" method="post">
+          <input type="text" name="item_name" placeholder="Item name" />
+          <br />
+          <input type="text" name="amount" placeholder="Amount" />
+          <br />
+          <input type="text" name="unit" placeholder="Unit" />
+          <br />
+          <input type="text" name="type" placeholder="Type" />
+          <br />
+        </form>
+        <button form="new" type="submit" name="item" value="add">Add</button>
+      </div>
+    </div>
     <div class="flex-container">
       <table class="styled-table">
         <tr>
