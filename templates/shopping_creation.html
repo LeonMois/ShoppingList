@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Create Shopping List</title>
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='main.css') }}"
+    />
+  </head>
+  <body>
+    <form method="post">
+      <button type="submit" method="GET" name="view_list" value="view_list">
+        View shopping list
+      </button>
+      <button
+        type="submit"
+        method="GET"
+        name="edit_recipes"
+        value="edit_recipes"
+      >
+        Edit recipes
+      </button>
+    </form>
+    <div style="align-content: center">
+      <h1>Add recipes:</h1>
+      <form method="post">
+        <select required name="recipe_name" style="width: 100px">
+          {% for recipe in recipes %}
+          <option value="{{ recipe }}">{{ recipe }}</option>
+          {% endfor %}
+        </select>
+        <br />
+        <button type="submit" name="recipe" value="add">Add Recipe</button>
+      </form>
+      <br />
+      <h1>Your list so far:</h1>
+      <table>
+        <tr>
+          <th>Item</th>
+          <th>Amount</th>
+          <th>Unit</th>
+        </tr>
+        {% for item in items %}
+        <tr>
+          <td>{{ item.name }}</td>
+          <td>{{ item.amount }}</td>
+          <td>{{ item.unit }}</td>
+          <td>
+            <form method="post">
+              <button type="submit" name="action" value="{{ item.id }}">
+                Delete
+              </button>
+            </form>
+          </td>
+        </tr>
+        {% endfor %}
+      </table>
+    </div>
+  </body>
+</html>

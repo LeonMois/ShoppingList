@@ -3,6 +3,9 @@ class Ingredient:
     def __init__(self, name: str, type: str) -> None:
         self.name = name
         self.type = type
+
+    def __str__(self) -> str:
+        return f"{self.name},{self.type}"
     
 class RecipePart:
 
@@ -10,6 +13,8 @@ class RecipePart:
         self.ingredient = ingredient
         self.unit = unit
         self.amount = amount
+    def __str__(self) -> str:
+        return f"{self.ingredient.name}, {self.unit}, {self.amount} \n"
 
 class Recipe:
 
@@ -23,6 +28,13 @@ class Recipe:
                 part.unit = unit
                 part.amount = amount
                 return 
+    
+    def __str__(self) -> str:
+        printed = f"{self.name}\n"
+        for part in self.recipeParts:
+            printed += part.__str__()
+        return printed
+        
 
 class SingleItem:
 
@@ -32,3 +44,6 @@ class SingleItem:
         self.unit = unit
         self.amount = amount
         self.type = type
+    
+    def __str__(self) -> str:
+        return f"{self.name},{self.amount},{self.unit}"

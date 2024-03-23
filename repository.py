@@ -39,17 +39,21 @@ def createSingleItem(con: Connection, singleItem: classes.SingleItem) -> None:
     con.commit()
     cur.close()
 
-def fillRecipe(con: Connection, recipePart: classes.RecipePart, recipe: str) -> None:
+def fillRecipe(con: Connection, recipe: classes.Recipe) -> None:
     cur = con.cursor()
-    cur.execute(f"INSERT OR IGNORE INTO recipeparts (ingredient, unit, amount,recipe_name) VALUES ('{recipePart.ingredient.name}','{recipePart.unit}','{recipePart.amount}','{recipe}');")
+    for part in recipe.recipeParts:
+        print("fill",part)
+        cur.execute(f"INSERT OR IGNORE INTO recipeparts (ingredient, unit, amount,recipe_name) VALUES ('{part.ingredient.name}','{part.unit}','{part.amount}','{recipe.name}');")
     con.commit()
     cur.close()
 
 def updateRecipe(con: Connection, recipe: classes.Recipe):
     cur = con.cursor()
     cur.execute(f"DELETE FROM recipeparts WHERE recipe_name='{recipe.name}'")
+    con.commit()
     for part in recipe.recipeParts:
-        cur.execute(f"INSERT OR IGNORE INTO recipeparts (ingredient, unit, amount,recipe_name) VALUES ('{part.ingredient.name}','{part.unit}','{part.amount}','{recipe.name}');")
+        print("update",part)
+        cur.execute(f"INSERT INTO recipeparts (ingredient, unit, amount,recipe_name) VALUES ('{part.ingredient.name}','{part.unit}','{part.amount}','{recipe.name}');")
     con.commit()
     cur.close()
 
@@ -136,8 +140,7 @@ def deleteSingleItem(con: Connection, singleItem: str):
 def listRecipes(con: Connection) -> list:
     cur = con.cursor()
     cur.execute(f"SELECT (name) FROM recipes")
-    recipes = [recipe[0] for recipe in cur.fetchall()]
-
+    recipes = cur.fetchall()
     con.commit()
     cur.close()
     return recipes
@@ -161,6 +164,13 @@ def listCategories(con: Connection) -> list:
 def getRecipe(con: Connection, recipe: str) -> list:
     cur = con.cursor()
     cur.execute(f"SELECT * FROM recipeparts WHERE recipe_name='{recipe}'")
+    fetch = cur.fetchall()
+    cur.close()
+    return fetch
+
+def getIngredient(con: Connection, ingredient: str) -> list:
+    cur = con.cursor()
+    cur.execute(f"SELECT * FROM ingredients WHERE recipe_name='{ingredient}'")
     fetch = cur.fetchall()
     cur.close()
     return fetch

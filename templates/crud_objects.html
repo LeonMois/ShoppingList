@@ -3,6 +3,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
+
     <title>Recipes</title>
     <link
       rel="stylesheet"
@@ -10,6 +11,15 @@
     />
   </head>
   <body>
+    <script src="{{ url_for('static', filename='main.js') }}"></script>
+    <form method="post">
+      <button type="submit" method="GET" name="view_list" value="view_list">
+        View shopping list
+      </button>
+      <button type="submit" method="GET" name="edit_shopping" value="edit_shopping">
+        Create shopping list
+      </button>
+    </form>
     <div>
       <h1>Edit categories:</h1>
       <form method="post">
@@ -54,7 +64,38 @@
     <button type="submit" name="create_and_delete" value="edit">
       Delete
     </button></form>
-
+    </div>
+    <div>
+      <h1> Edit Recipes</h1>
+      <form class="ingredient_form" id="recipe_form" method="post">
+        <input type="text" name="recipe_name" style="width: 100px" placeholder="Recipe Name"/>
+        <br />
+        <select required name="recipe_ingredient_0" style="width: 100px">
+          {% for ingredient in ingredients %}
+          <option name="option" value="{{ ingredient.name }}">{{ ingredient.name }}</option>
+          {% endfor %}
+        </select>
+        <br />
+        <input type="text" name="amount_0" style="width: 100px" placeholder="Amount"/>
+        <br />
+        <input type="text" name="unit_0" style="width: 100px" placeholder="Unit"/>
+        <br />
+      </form>
+      <button style="padding-right: 10px;" type="button" onclick="extendRecipeFields(document)">Add Ingredients</button>
+      <button form="recipe_form" type=submit name="recipe" value="create_update">
+        Create or update
+      </button>
+      <form method="post">
+        <select required name="recipe_name" style="width: 100px">
+          {% for recipe in recipes %}
+          <option value="{{ recipe }}">{{ recipe }}</option>
+          {% endfor %}
+        </select>
+        <br />
+        <button type="submit" name="recipe" value="delete">
+          Delete
+        </button>
+      </form>
     </div>
   </body>
 </html>
