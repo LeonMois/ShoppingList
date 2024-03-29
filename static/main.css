@@ -57,6 +57,7 @@
   font-weight: 600;
   line-height: 20px;
   padding: 6px 16px;
+  margin: 2px;
   text-align: center;
   text-decoration: none;
   user-select: none;
@@ -103,6 +104,15 @@
 .items {
   display: flex;
   flex-direction: column;
-  justify-content: space-around;
+  justify-content: space-between;
   width: 70%;
+  height: 70%;
+}
+.form_item {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-around;
+  padding: 1px;
+  margin-right: 1px;
+  margin-left: 1px;
 }

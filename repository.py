@@ -11,8 +11,25 @@ def createDBForUser(username: str) -> None:
     cur.execute('CREATE TABLE IF NOT EXISTS recipeparts (id INTEGER PRIMARY KEY, ingredient TEXT, unit TEXT, amount REAL, recipe_name TEXT, FOREIGN KEY(recipe_name) REFERENCES recipes(name), FOREIGN KEY(ingredient) REFERENCES ingredients(name));')
     cur.execute('CREATE TABLE IF NOT EXISTS singleitems (id INTEGER PRIMARY KEY, name TEXT UNIQUE, unit TEXT, amount REAL, type TEXT);')
     cur.execute('CREATE TABLE IF NOT EXISTS shoppinglist (id INTEGER PRIMARY KEY, name TEXT, unit TEXT, amount REAL, type TEXT, recipe TEXT);')
+    cur.execute('CREATE TABLE IF NOT EXISTS settings (id INTEGER PRIMARY KEY, sort_order TEXT, user TEXT UNIQUE);')
+    cur.execute(f"INSERT OR IGNORE INTO settings VALUES ('1',' ', '{username}');")
     cur.close()
     con.commit()
+
+
+def setSortOrder(con: Connection, sort_order: str) -> None:
+    cur = con.cursor()
+    cur.execute(f"UPDATE settings SET sort_order = '{sort_order}' WHERE id='1';")
+    con.commit()
+    cur.close()
+
+def getSortOrder(con: Connection) -> list:
+    cur = con.cursor()
+    cur.execute(f"SELECT (sort_order) FROM settings WHERE id='1';")
+    settings = cur.fetchall()
+    con.commit()
+    cur.close()
+    return settings
 
 
 def createRecipe(con: Connection, recipe : str) -> None:
@@ -42,7 +59,6 @@ def createSingleItem(con: Connection, singleItem: classes.SingleItem) -> None:
 def fillRecipe(con: Connection, recipe: classes.Recipe) -> None:
     cur = con.cursor()
     for part in recipe.recipeParts:
-        print("fill",part)
         cur.execute(f"INSERT OR IGNORE INTO recipeparts (ingredient, unit, amount,recipe_name) VALUES ('{part.ingredient.name}','{part.unit}','{part.amount}','{recipe.name}');")
     con.commit()
     cur.close()
@@ -52,7 +68,6 @@ def updateRecipe(con: Connection, recipe: classes.Recipe):
     cur.execute(f"DELETE FROM recipeparts WHERE recipe_name='{recipe.name}'")
     con.commit()
     for part in recipe.recipeParts:
-        print("update",part)
         cur.execute(f"INSERT INTO recipeparts (ingredient, unit, amount,recipe_name) VALUES ('{part.ingredient.name}','{part.unit}','{part.amount}','{recipe.name}');")
     con.commit()
     cur.close()
@@ -194,19 +209,3 @@ def getShoppingList(con: Connection) -> list:
     fetch = cur.fetchall()
     cur.close()
     return fetch
-
-#ing = classes.Ingredient(name="Banana",type="fruit")
-#recipePart = classes.RecipePart(ing,"pieces", "2")
-#recipe = classes.Recipe([recipePart], "Pizza")
-
-#createDBForUser("Leon")
-#con = sqlite3.connect("dbs/Leon.db")
-#createRecipe(con,"Pizza")
-#createCategory(con, "fruit")
-#createIngredient(con,ing)
-#fillRecipe(con, recipePart,"Pizza")
-#print(getRecipe(con,"Pizza"))
-#print(listCategories(con))
-#print(listIngredients(con))
-#print(listRecipes(con))
-#con.close

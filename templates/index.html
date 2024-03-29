@@ -33,7 +33,7 @@
       </form>
     </div>
     <div class="add-single-item">
-      <div>
+      <div class="form_item">
         <form class="items" id="existing" method="post">
           <legend><b>Add from existing items:</b></legend>
           <select required name="existing_item_name">
@@ -43,8 +43,8 @@
             </option>
             {% endfor %}
           </select>
-          <input type="text" name="amount" placeholder="Amount" />
-          <input type="text" name="unit" placeholder="Unit" />
+          <input required type="text" name="amount" placeholder="Amount" />
+          <input required type="text" name="unit" placeholder="Unit" />
           <button
             class="button-3"
             form="existing"
@@ -56,13 +56,18 @@
           </button>
         </form>
       </div>
-      <div>
+      <div class="form_item">
         <form class="items" id="new" method="post">
           <legend><b>Add new item:</b></legend>
-          <input type="text" name="new_item_name" placeholder="Item name" />
-          <input type="text" name="amount" placeholder="Amount" />
-          <input type="text" name="unit" placeholder="Unit" />
-          <input type="text" name="type" placeholder="Type" />
+          <input
+            required
+            type="text"
+            name="new_item_name"
+            placeholder="Item name"
+          />
+          <input required type="text" name="amount" placeholder="Amount" />
+          <input required type="text" name="unit" placeholder="Unit" />
+          <input required type="text" name="type" placeholder="Type" />
           <button
             class="button-3"
             form="new"
@@ -71,6 +76,25 @@
             value="add"
           >
             Add
+          </button>
+        </form>
+      </div>
+      <div class="form_item">
+        <form class="items" id="order" method="post">
+          <legend><b>Sort by:</b></legend>
+          <select required name="sort_order">
+            {% for category in categories %}
+            <option name="option" value="{{ category }}">{{ category }}</option>
+            {% endfor %}
+          </select>
+          <button
+            class="button-3"
+            form="order"
+            type="submit"
+            name="item"
+            value="Sort"
+          >
+            Sort
           </button>
         </form>
       </div>

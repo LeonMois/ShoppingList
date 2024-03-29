@@ -31,7 +31,7 @@ def mapRowsToSingleItems(rows) -> list:
 def mapRowsToCategories(rows) -> list:
     categories = []
     for row in rows:
-        categories.append(row[1])
+        categories.append(row[0])
     return categories
 
 def mapRowsToRecipe(rows) -> list:
