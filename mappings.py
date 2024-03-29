@@ -46,8 +46,6 @@ def mapRowsToIngredients(rows) -> classes.Ingredient:
         ingredients.append(classes.Ingredient(row[1],row[2]))
     return ingredients
 
-def mapRowsToSingleItem(rows) -> list:
-    items = []
-    for row in rows:
-        items.append(classes.SingleItem(row[0],row[1],row[2],row[3],row[4]))
-    return items
+def mapRowToSingleItem(rows) -> list:
+    row = rows[0]
+    return classes.SingleItem(row[0],row[1],row[2],row[3],row[4])

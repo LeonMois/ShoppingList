@@ -181,6 +181,13 @@ def getSingleItems(con: Connection) -> list:
     fetch = cur.fetchall()
     cur.close()
     return fetch
+def getOneSingleItem(con: Connection, item_name: str) -> list:
+    cur = con.cursor()
+    cur.execute(f"SELECT * FROM singleitems WHERE name = '{item_name}'")
+    fetch = cur.fetchall()
+    cur.close()
+    return fetch
+
 def getShoppingList(con: Connection) -> list:
     cur = con.cursor()
     cur.execute(f"SELECT * FROM shoppinglist")

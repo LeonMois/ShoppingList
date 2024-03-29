@@ -32,50 +32,47 @@
         </button>
       </form>
     </div>
-    <div>
+    <div class="add-single-item">
       <div>
-        <h1>Add item from list:</h1>
         <form class="items" id="existing" method="post">
-          <select required name="item_name">
+          <legend><b>Add from existing items:</b></legend>
+          <select required name="existing_item_name">
             {% for item in single_items %}
             <option name="option" value="{{ item.name }}">
               {{ item.name }}
             </option>
             {% endfor %}
           </select>
-          <br />
-          <input
-            type="text"
-            name="amount"
-            style="width: 100px"
-            placeholder="Amount"
-          />
-          <br />
-          <input
-            type="text"
-            name="unit"
-            style="width: 100px"
-            placeholder="Unit"
-          />
-          <br />
+          <input type="text" name="amount" placeholder="Amount" />
+          <input type="text" name="unit" placeholder="Unit" />
+          <button
+            class="button-3"
+            form="existing"
+            type="submit"
+            name="item"
+            value="add"
+          >
+            Add
+          </button>
         </form>
-        <button form="existing" type="submit" name="item" value="add">
-          Add
-        </button>
       </div>
       <div>
-        <h1>Add new item:</h1>
         <form class="items" id="new" method="post">
-          <input type="text" name="item_name" placeholder="Item name" />
-          <br />
+          <legend><b>Add new item:</b></legend>
+          <input type="text" name="new_item_name" placeholder="Item name" />
           <input type="text" name="amount" placeholder="Amount" />
-          <br />
           <input type="text" name="unit" placeholder="Unit" />
-          <br />
           <input type="text" name="type" placeholder="Type" />
-          <br />
+          <button
+            class="button-3"
+            form="new"
+            type="submit"
+            name="item"
+            value="add"
+          >
+            Add
+          </button>
         </form>
-        <button form="new" type="submit" name="item" value="add">Add</button>
       </div>
     </div>
     <div class="flex-container">

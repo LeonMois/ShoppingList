@@ -38,6 +38,7 @@
 .header-container {
   display: flex;
   flex: 1 1 0px;
+  justify-content: space-around;
 }
 /* CSS */
 .button-3 {
@@ -89,4 +90,19 @@
 .button-3:active {
   background-color: #298e46;
   box-shadow: rgba(20, 70, 32, 0.2) 0 1px 0 inset;
+}
+
+.add-single-item {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  text-wrap: false;
+  flex-basis: 0;
+  flex-grow: 1;
+}
+.items {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-around;
+  width: 70%;
 }

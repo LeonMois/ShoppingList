@@ -1,3 +1,6 @@
 dbs/
 __pycache__
 venv/
+ShoppingList.*/
+dist/
+build/
