@@ -5,3 +5,5 @@ ShoppingList.*/
 dist/
 build/
 .venv
+.scannerwork
+sonar-project.properties

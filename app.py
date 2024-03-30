@@ -11,7 +11,6 @@ def create_app():
     def index():
         if flask.request.method == "GET":
             connection = sqlite3.connect("dbs/Leon.db")
-            cur = connection.cursor()    
             repository.createDBForUser("Leon")
             query = repository.getShoppingList(connection)
             single_items = mappings.mapRowsToSingleItems(repository.getSingleItems(connection))

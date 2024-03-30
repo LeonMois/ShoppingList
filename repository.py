@@ -19,13 +19,15 @@ def createDBForUser(username: str) -> None:
 
 def setSortOrder(con: Connection, sort_order: str) -> None:
     cur = con.cursor()
-    cur.execute(f"UPDATE settings SET sort_order = '{sort_order}' WHERE id='1';")
+    print(sort_order)
+    query = "UPDATE settings SET sort_order='(?)' WHERE id='1'"
+    cur.execute("UPDATE settings SET sort_order=':sort_order' WHERE id='1'",{"sort_order": sort_order})
     con.commit()
     cur.close()
 
 def getSortOrder(con: Connection) -> list:
     cur = con.cursor()
-    cur.execute(f"SELECT (sort_order) FROM settings WHERE id='1';")
+    cur.execute("SELECT (sort_order) FROM settings WHERE id='1';")
     settings = cur.fetchall()
     con.commit()
     cur.close()
@@ -115,7 +117,7 @@ def deleteRecipe(con: Connection, recipe: str):
 
 def deleteShoppingList(con: Connection):
     cur = con.cursor()
-    cur.execute(f"DELETE FROM shoppinglist")
+    cur.execute("DELETE FROM shoppinglist")
     con.commit()
     cur.close()
 
@@ -154,7 +156,7 @@ def deleteSingleItem(con: Connection, singleItem: str):
 
 def listRecipes(con: Connection) -> list:
     cur = con.cursor()
-    cur.execute(f"SELECT (name) FROM recipes")
+    cur.execute("SELECT (name) FROM recipes")
     recipes = cur.fetchall()
     con.commit()
     cur.close()
@@ -162,7 +164,7 @@ def listRecipes(con: Connection) -> list:
 
 def listIngredients(con: Connection) -> list:
     cur = con.cursor()
-    cur.execute(f"SELECT * FROM ingredients")
+    cur.execute("SELECT * FROM ingredients")
     ingredients = cur.fetchall()
     con.commit()
     cur.close()
@@ -170,7 +172,7 @@ def listIngredients(con: Connection) -> list:
 
 def listCategories(con: Connection) -> list:
     cur = con.cursor()
-    cur.execute(f"SELECT (category) FROM categories")
+    cur.execute("SELECT (category) FROM categories")
     ingredients = cur.fetchall()
     con.commit()
     cur.close()
@@ -192,7 +194,7 @@ def getIngredient(con: Connection, ingredient: str) -> list:
 
 def getSingleItems(con: Connection) -> list:
     cur = con.cursor()
-    cur.execute(f"SELECT * FROM singleitems")
+    cur.execute("SELECT * FROM singleitems")
     fetch = cur.fetchall()
     cur.close()
     return fetch
@@ -205,7 +207,7 @@ def getOneSingleItem(con: Connection, item_name: str) -> list:
 
 def getShoppingList(con: Connection) -> list:
     cur = con.cursor()
-    cur.execute(f"SELECT * FROM shoppinglist")
+    cur.execute("SELECT * FROM shoppinglist")
     fetch = cur.fetchall()
     cur.close()
     return fetch
