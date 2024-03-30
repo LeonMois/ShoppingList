@@ -4,3 +4,4 @@ venv/
 ShoppingList.*/
 dist/
 build/
+.venv
