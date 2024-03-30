@@ -18,7 +18,7 @@ class RecipePart:
 
 class Recipe:
 
-    def __init__(self, recipeParts: list, name: str) -> None:
+    def __init__(self, recipeParts: list[RecipePart], name: str) -> None:
         self.recipeParts = recipeParts
         self.name = name
     
