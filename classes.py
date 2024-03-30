@@ -47,3 +47,5 @@ class SingleItem:
     
     def __str__(self) -> str:
         return f"{self.name},{self.amount},{self.unit}"
+    
+userdata = "Leon"

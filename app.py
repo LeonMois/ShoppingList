@@ -1,8 +1,9 @@
 import flask
-import recipeRepository
+import Repository.recipeRepository as recipeRepository
 import sqlite3
 import classes
-import mappingService
+import Service.mappingService as mappingService
+from classes import userdata
 
     # create and configure the app
 def create_app():
@@ -10,8 +11,8 @@ def create_app():
     @app.route("/", methods=["GET", "POST"])
     def index():
         if flask.request.method == "GET":
-            connection = sqlite3.connect("dbs/Leon.db")
-            recipeRepository.createDBForUser("Leon")
+            connection = sqlite3.connect(f"dbs/{userdata}.db")
+            recipeRepository.createDBForUser(userdata)
             query = recipeRepository.getShoppingList(connection)
             single_items = mappingService.mapRowsToSingleItems(recipeRepository.getSingleItems(connection))
             categories = mappingService.mapRowsToCategories(recipeRepository.listCategories(connection))
