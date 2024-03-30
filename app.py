@@ -1,8 +1,8 @@
 import flask
-import repository
+import recipeRepository
 import sqlite3
 import classes
-import mappings
+import mappingService
 
     # create and configure the app
 def create_app():
@@ -11,14 +11,14 @@ def create_app():
     def index():
         if flask.request.method == "GET":
             connection = sqlite3.connect("dbs/Leon.db")
-            repository.createDBForUser("Leon")
-            query = repository.getShoppingList(connection)
-            single_items = mappings.mapRowsToSingleItems(repository.getSingleItems(connection))
-            categories = mappings.mapRowsToCategories(repository.listCategories(connection))
+            recipeRepository.createDBForUser("Leon")
+            query = recipeRepository.getShoppingList(connection)
+            single_items = mappingService.mapRowsToSingleItems(recipeRepository.getSingleItems(connection))
+            categories = mappingService.mapRowsToCategories(recipeRepository.listCategories(connection))
 
-            shoppingList = mappings.mapRowsToSingleItems(query)
+            shoppingList = mappingService.mapRowsToSingleItems(query)
             for part in shoppingList:
-                if part.type == repository.getSortOrder(connection)[0][0]:
+                if part.type == recipeRepository.getSortOrder(connection)[0][0]:
                     tmp = part
                     shoppingList.remove(part)
                     shoppingList.insert(0,tmp)
@@ -36,34 +36,34 @@ def create_app():
                 amount = flask.request.form.get("amount")
                 type = flask.request.form.get("type")
                 item = classes.SingleItem(0,name,unit,amount,type)
-                repository.addSingleItemToShoppingList(connection,item)
-                repository.createCategory(connection, type)
+                recipeRepository.addSingleItemToShoppingList(connection,item)
+                recipeRepository.createCategory(connection, type)
                 item.amount = None
                 item.unit = None
-                repository.createSingleItem(connection, item)
+                recipeRepository.createSingleItem(connection, item)
                 return flask.redirect("/")
             if "existing_item_name" in flask.request.form:
                 name = flask.request.form.get("existing_item_name")
-                item = mappings.mapRowToSingleItem(repository.getOneSingleItem(connection,name))
+                item = mappingService.mapRowToSingleItem(recipeRepository.getOneSingleItem(connection,name))
                 item.amount = flask.request.form.get("amount")
                 item.unit = flask.request.form.get("unit")
-                repository.addSingleItemToShoppingList(connection,item)
+                recipeRepository.addSingleItemToShoppingList(connection,item)
                 return flask.redirect("/")
             if "sort_order" in flask.request.form:
                 sort_order = flask.request.form.get("sort_order")
-                repository.setSortOrder(connection,sort_order)
-                query = repository.getShoppingList(connection)
-                single_items = mappings.mapRowsToSingleItems(repository.getSingleItems(connection))
-                categories = mappings.mapRowsToCategories(repository.listCategories(connection))
+                recipeRepository.setSortOrder(connection,sort_order)
+                query = recipeRepository.getShoppingList(connection)
+                single_items = mappingService.mapRowsToSingleItems(recipeRepository.getSingleItems(connection))
+                categories = mappingService.mapRowsToCategories(recipeRepository.listCategories(connection))
                 connection.close() 
-                shoppingList = mappings.mapRowsToSingleItems(query)
+                shoppingList = mappingService.mapRowsToSingleItems(query)
                 for part in shoppingList:
                     if part.type == sort_order:
                         tmp = part
                         shoppingList.remove(part)
                         shoppingList.insert(0,tmp)
                 return flask.render_template("index.html", items=shoppingList, single_items=single_items, categories = categories)
-            repository.deleteItemFromShoppingList(connection, flask.request.form.get("action"))
+            recipeRepository.deleteItemFromShoppingList(connection, flask.request.form.get("action"))
             connection.close()
             return flask.redirect("/")
 
@@ -72,10 +72,10 @@ def create_app():
         if flask.request.method == "GET":
             connection = sqlite3.connect("dbs/Leon.db")
             categories = []
-            for category in repository.listCategories(connection):
+            for category in recipeRepository.listCategories(connection):
                 categories.append(category[0])
-            ingredients = mappings.mapRowsToIngredients(repository.listIngredients(connection))
-            recipes = mappings.mapRowsToRecipe(repository.listRecipes(connection))
+            ingredients = mappingService.mapRowsToIngredients(recipeRepository.listIngredients(connection))
+            recipes = mappingService.mapRowsToRecipe(recipeRepository.listRecipes(connection))
             return flask.render_template("crud_objects.html", categories=categories, ingredients=ingredients, recipes=recipes)
         else:
             if "view_list" in flask.request.form:
@@ -84,23 +84,23 @@ def create_app():
                 return flask.redirect("/shoppinglist/creation")
             connection = sqlite3.connect("dbs/Leon.db")
             if flask.request.form.get("add_category") != None:
-                repository.createCategory(connection, flask.request.form.get("add_category"))
+                recipeRepository.createCategory(connection, flask.request.form.get("add_category"))
             elif flask.request.form.get("delete_category") != None:
-                repository.deleteCategory(connection, flask.request.form.get("delete_category"))
+                recipeRepository.deleteCategory(connection, flask.request.form.get("delete_category"))
             elif flask.request.form.get("ingredient_name") != None:
                 if flask.request.form.get("delete_ingredient") != None:
-                    repository.deleteIngredient(connection, flask.request.form.get("delete_ingredient"))
+                    recipeRepository.deleteIngredient(connection, flask.request.form.get("delete_ingredient"))
                     return flask.redirect("/crud_objects")
-                ingredients = mappings.mapRowsToIngredients(repository.listIngredients(connection))
+                ingredients = mappingService.mapRowsToIngredients(recipeRepository.listIngredients(connection))
     
                 userIngredient = classes.Ingredient(flask.request.form.get("ingredient_name"), flask.request.form.get("ingredient_category"))
                 for ingredient in ingredients:
                     if ingredient.name == userIngredient.name:
-                        repository.updateIngredient(connection, userIngredient)
+                        recipeRepository.updateIngredient(connection, userIngredient)
                         return flask.redirect("/crud_objects")
-                repository.createIngredient(connection, userIngredient)
+                recipeRepository.createIngredient(connection, userIngredient)
             elif flask.request.form.get("recipe") == "create_update":
-                ingredients = mappings.mapRowsToIngredientKeyValue(repository.listIngredients(connection))
+                ingredients = mappingService.mapRowsToIngredientKeyValue(recipeRepository.listIngredients(connection))
                 i = 0
                 recipe_parts = []
                 while(flask.request.form.get("recipe_ingredient_" + str(i)) != None):
@@ -111,13 +111,13 @@ def create_app():
                     recipe_parts.append(classes.RecipePart(ing,unit,amount))
                     i += 1
                 recipe = classes.Recipe(recipe_parts, flask.request.form.get("recipe_name"))
-                if flask.request.form.get("recipe_name") in mappings.mapRowsToRecipe(repository.listRecipes(connection)):
-                    repository.updateRecipe(connection, recipe)
+                if flask.request.form.get("recipe_name") in mappingService.mapRowsToRecipe(recipeRepository.listRecipes(connection)):
+                    recipeRepository.updateRecipe(connection, recipe)
                 else:
-                    repository.createRecipe(connection, recipe.name)
-                    repository.fillRecipe(connection, recipe)       
+                    recipeRepository.createRecipe(connection, recipe.name)
+                    recipeRepository.fillRecipe(connection, recipe)       
             elif flask.request.form.get("recipe") == "delete":
-                repository.deleteRecipe(connection,flask.request.form.get("recipe_name"))
+                recipeRepository.deleteRecipe(connection,flask.request.form.get("recipe_name"))
             connection.close()
             return flask.redirect("/crud_objects")
         
@@ -128,12 +128,12 @@ def create_app():
             cur = connection.cursor()    
             cur.execute("SELECT name FROM sqlite_master WHERE type='table'")
             if not "shoppinglist" in cur.fetchall():
-                repository.createDBForUser("Leon")
+                recipeRepository.createDBForUser("Leon")
             cur.close()
-            query = repository.getShoppingList(connection)
-            recipes = mappings.mapRowsToRecipe(repository.listRecipes(connection))
+            query = recipeRepository.getShoppingList(connection)
+            recipes = mappingService.mapRowsToRecipe(recipeRepository.listRecipes(connection))
             connection.close() 
-            shoppingList = mappings.mapRowsToSingleItems(query)
+            shoppingList = mappingService.mapRowsToSingleItems(query)
             return flask.render_template("shopping_creation.html", items=shoppingList, recipes=recipes)
         else:
             if "view_list" in flask.request.form:
@@ -142,8 +142,8 @@ def create_app():
                 return flask.redirect("/crud_objects")
             connection = sqlite3.connect("dbs/Leon.db")
             if flask.request.form.get("recipe") == "add":
-                ingredients = repository.listIngredients(connection)
-                recipe = classes.Recipe(mappings.mapsRowsToRecipeParts(repository.getRecipe(connection,flask.request.form.get("recipe_name")),ingredients),flask.request.form.get("recipe_name"))
-                repository.addRecipeToShoppingList(connection,recipe)
+                ingredients = recipeRepository.listIngredients(connection)
+                recipe = classes.Recipe(mappingService.mapsRowsToRecipeParts(recipeRepository.getRecipe(connection,flask.request.form.get("recipe_name")),ingredients),flask.request.form.get("recipe_name"))
+                recipeRepository.addRecipeToShoppingList(connection,recipe)
             return flask.redirect("/shoppinglist/creation")
     return app
