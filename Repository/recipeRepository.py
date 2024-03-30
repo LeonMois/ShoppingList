@@ -19,22 +19,21 @@ def createDBForUser(username: str) -> None:
 
 def setSortOrder(con: Connection, sort_order: str) -> None:
     cur = con.cursor()
-    cur.execute("UPDATE settings SET sort_order=':sort_order' WHERE id='1'",{"sort_order": sort_order})
+    cur.execute("UPDATE settings SET sort_order=:sort_order WHERE id='1'",{"sort_order": sort_order})
     con.commit()
     cur.close()
 
-def getSortOrder(con: Connection) -> list:
+def getSortOrder(con: Connection):
     cur = con.cursor()
     cur.execute("SELECT (sort_order) FROM settings WHERE id='1';")
-    settings = cur.fetchall()
+    order = cur.fetchone()
     con.commit()
     cur.close()
-    return settings
-
+    return order
 
 def createNewRecipeName(con: Connection, recipe : str) -> None:
     cur = con.cursor()
-    cur.execute("INSERT OR IGNORE INTO recipes (name) VALUES (':recipe');", {"recipe": recipe})
+    cur.execute("INSERT OR IGNORE INTO recipes (name) VALUES (:recipe);", {"recipe": recipe})
     con.commit()
     cur.close()
 
@@ -46,7 +45,7 @@ def createNewCategory(con: Connection, category: str) -> None:
 
 def createNewIngredient(con: Connection, ingredient: Ingredient) -> None:
     cur = con.cursor()
-    cur.execute("INSERT OR IGNORE INTO ingredients (name, category) VALUES (:name, :category)", {"name": ingredient.name, "category": ingredient.type})
+    cur.execute("INSERT OR IGNORE INTO ingredients name, category VALUES :name, :category", {"name": ingredient.name, "category": ingredient.type})
     con.commit()
     cur.close()
 
@@ -65,7 +64,7 @@ def createNewRecipe(con: Connection, recipe: Recipe) -> None:
 
 def updateRecipe(con: Connection, recipe: Recipe):
     cur = con.cursor()
-    cur.execute("DELETE FROM recipeparts WHERE recipe_name=':recipe_name'", {"recipe_name": recipe.name})    
+    cur.execute("DELETE FROM recipeparts WHERE recipe_name=:recipe_name", {"recipe_name": recipe.name})    
     con.commit()
     for part in recipe.recipeParts:
         cur.execute("INSERT OR IGNORE INTO recipeparts (ingredient, unit, amount,recipe_name) VALUES (:ingredient, :unit, :amount, :recipe_name)", {"ingredient": part.ingredient.name, "unit": part.unit, "amount": part.amount, "recipe_name": recipe.name})
@@ -87,29 +86,29 @@ def addRecipeToShoppingList(con: Connection, recipe: Recipe):
 
 def updateSingleItem(con: Connection, singleItem: SingleItem):
     cur = con.cursor()
-    cur.execute("DELETE FROM singleitems WHERE name=':item_name'", {"item_name": singleItem.name})
+    cur.execute("DELETE FROM singleitems WHERE name=:item_name", {"item_name": singleItem.name})
     cur.execute("INSERT OR IGNORE INTO singleitems (name, unit, amount, type) VALUES (:name, :unit, :amount, :type)", {"name": singleItem.name, "unit": singleItem.unit, "amount": singleItem.amount, "type": singleItem.type})
     con.commit()
     cur.close()
 
 def renameRecipe(con: Connection, oldName: str, newName: str):
     cur = con.cursor()
-    cur.execute("UPDATE recipes SET name=':new_name' WHERE name=':old_name'", {"new_name": newName, "old_name": oldName})
-    cur.execute("UPDATE recipeparts SET recipe_name=':new_name' WHERE recipe_name=':old_name'", {"new_name": newName, "old_name": oldName})
+    cur.execute("UPDATE recipes SET name=:new_name WHERE name=:old_name", {"new_name": newName, "old_name": oldName})
+    cur.execute("UPDATE recipeparts SET recipe_name=:new_name WHERE recipe_name=:old_name", {"new_name": newName, "old_name": oldName})
     con.commit()
     cur.close()
 
 def updateIngredient(con: Connection, ingredient: Ingredient):
     cur = con.cursor()
-    cur.execute("Delete FROM ingredients WHERE name=':name'", {"name": ingredient.name})
+    cur.execute("Delete FROM ingredients WHERE name=:name", {"name": ingredient.name})
     cur.execute("INSERT OR IGNORE INTO ingredients (name, category) VALUES (:name, :category)", {"name": ingredient.name, "category": ingredient.type})
     con.commit()
     cur.close()
 
 def deleteRecipe(con: Connection, recipe: str):
     cur = con.cursor()
-    cur.execute("DELETE FROM recipes WHERE name=':recipe'", {"recipe": recipe})
-    cur.execute("DELETE FROM recipeparts WHERE recipe_name=':recipe'", {"recipe": recipe})
+    cur.execute("DELETE FROM recipes WHERE name=:recipe", {"recipe": recipe})
+    cur.execute("DELETE FROM recipeparts WHERE recipe_name=:recipe", {"recipe": recipe})
     con.commit()
     cur.close()
 
@@ -122,33 +121,33 @@ def deleteAllShoppingListEntries(con: Connection):
 
 def deleteOneItemFromShoppingList(con: Connection, id: int):
     cur = con.cursor()
-    cur.execute("DELETE FROM shoppinglist WHERE id=':id'", {"id": id})
+    cur.execute("DELETE FROM shoppinglist WHERE id=:id", {"id": id})
     con.commit()
     cur.close()
 
 def deleteRecipeFromShoppingList(con: Connection, recipe: str):
     cur = con.cursor()
-    cur.execute("DELETE FROM shoppinglist WHERE name=':recipe'", {"recipe": recipe})
+    cur.execute("DELETE FROM shoppinglist WHERE name=:recipe", {"recipe": recipe})
     con.commit()
     cur.close()
 
 def deleteIngredient(con: Connection, ingredient: str):
     cur = con.cursor()
-    cur.execute("DELETE FROM ingredients WHERE name=':ingredient'", {"ingredient": ingredient})
-    cur.execute("DELETE FROM recipeparts WHERE ingredient=':ingredient'", {"ingredient": ingredient})
+    cur.execute("DELETE FROM ingredients WHERE name=:ingredient", {"ingredient": ingredient})
+    cur.execute("DELETE FROM recipeparts WHERE ingredient=:ingredient", {"ingredient": ingredient})
     con.commit()
     cur.close()
 
 def deleteCategory(con: Connection, category: str):
     cur = con.cursor()
-    cur.execute("DELETE FROM categories WHERE category=':category'", {"category": category})
-    cur.execute("DELETE FROM ingredients WHERE category=':category'", {"category": category})
+    cur.execute("DELETE FROM categories WHERE category=:category", {"category": category})
+    cur.execute("DELETE FROM ingredients WHERE category=:category", {"category": category})
     con.commit()
     cur.close()
 
 def deleteSingleItem(con: Connection, singleItem: str):
     cur = con.cursor()
-    cur.execute("DELETE FROM singleitems WHERE name=':singleItem'", {"singleItem": singleItem})
+    cur.execute("DELETE FROM singleitems WHERE name=:singleItem", {"singleItem": singleItem})
     con.commit()
     cur.close()
 
@@ -178,14 +177,14 @@ def getAllCategories(con: Connection) -> list:
 
 def getRecipeByName(con: Connection, recipe: str) -> list:
     cur = con.cursor()
-    cur.execute("SELECT * FROM recipeparts WHERE recipe_name=':recipe'", {"recipe": recipe})
+    cur.execute("SELECT * FROM recipeparts WHERE recipe_name=:recipe", {"recipe": recipe})
     fetch = cur.fetchall()
     cur.close()
     return fetch
 
 def getIngredientByName(con: Connection, ingredient: str) -> list:
     cur = con.cursor()
-    cur.execute("SELECT * FROM ingredients WHERE name=':ingredient'", {"ingredient": ingredient})
+    cur.execute("SELECT * FROM ingredients WHERE name=:ingredient", {"ingredient": ingredient})
     fetch = cur.fetchall()
     cur.close()
     return fetch
@@ -199,7 +198,7 @@ def getSingleItems(con: Connection) -> list:
 
 def getSingleItemByName(con: Connection, item_name: str) -> list:
     cur = con.cursor()
-    cur.execute("SELECT * FROM singleitems WHERE name = ':item_name'", {"item_name": item_name})
+    cur.execute("SELECT * FROM singleitems WHERE name=:name", {"name": item_name})
     fetch = cur.fetchall()
     cur.close()
     return fetch
